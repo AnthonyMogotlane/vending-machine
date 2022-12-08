@@ -69,21 +69,20 @@ public class VendingMachineTest
     public void ShouldReturnTotalOfTheProductsBought()
     {
         // Given
+        var vmm = new VendingMachineManager(); // Manager Instance
+
         var vm1 = new Azkoyen(GetProducts());
         var vm2 = new Azkoyen(GetProducts());
         var vm3 = new Azkoyen(GetProducts());
 
-        var vmm = new VendingMachineManager(vm1, vm2, vm3);
         // When
         vm1.BuyProduct("Simba", 19.99);
         vm2.BuyProduct("Simba", 19.99);
         vm3.BuyProduct("CocaCola", 12.99);
+
+        vmm.AddVendingMachines(vm1, vm2, vm3);
+
         // Then
-
-
-
-        Console.WriteLine(vm1.SoldProducts.Count());
-
         Assert.Equal(52.97, vmm.GetTotalIncome());
     }
 
@@ -95,17 +94,53 @@ public class VendingMachineTest
         var vm2 = new Azkoyen(GetProducts());
         var vm3 = new Azkoyen(GetProducts());
 
-        var vmm = new VendingMachineManager(vm1, vm2, vm3);
+        var vmm = new VendingMachineManager();
         // When
         vm1.BuyProduct("Simba", 19.99);
         vm2.BuyProduct("Simba", 19.99);
         vm3.BuyProduct("Simba", 19.99);
         vm3.BuyProduct("CocaCola", 12.99);
 
-        vmm.AddSoldProducts(vm1.SoldProducts);
-        vmm.AddSoldProducts(vm2.SoldProducts);
-        vmm.AddSoldProducts(vm3.SoldProducts);
+        vmm.AddVendingMachines(vm1, vm2, vm3);
+        vmm.AddSoldProducts();
         // Then
         Assert.Equal("Simba", vmm.GetMostPopular());
+    }
+
+    [Fact]
+    public void ShouldReturnTheLeastPopularProductSold()
+    {
+        var vmm = new VendingMachineManager(); // Manager instance
+        // Given
+        var vm1 = new Azkoyen(GetProducts());
+        var vm2 = new Azkoyen(GetProducts());
+        var vm3 = new Azkoyen(GetProducts());
+        // When -> Items bought in vending machines in the building
+        vm1.BuyProduct("Simba", 19.99);
+        vm2.BuyProduct("Simba", 19.99);
+        vm3.BuyProduct("Simba", 19.99);
+        vm3.BuyProduct("CocaCola", 12.99);
+
+        vmm.AddVendingMachines(vm1, vm2, vm3);
+        vmm.AddSoldProducts(); 
+        // Then
+        Assert.Equal("CocaCola", vmm.GetLeastPopular());
+    }
+
+    [Fact]
+    public void ShouldReturnNumberOfVendingMachinesInTheBuilding()
+    {
+        var vmm = new VendingMachineManager(); // Manager instance
+        // Given
+        var vm1 = new Azkoyen(GetProducts());
+        var vm2 = new Azkoyen(GetProducts());
+        var vm4 = new Azkoyen(GetProducts());
+        var vm5 = new Azkoyen(GetProducts());
+        var vm6 = new Azkoyen(GetProducts());
+        var vm7 = new Azkoyen(GetProducts());
+        // When
+        vmm.AddVendingMachines(vm1, vm2, vm4, vm5, vm6, vm7); // 6 machines in the building
+        // Then
+        Assert.Equal(6, vmm.CountVendingMachines());
     }
 }

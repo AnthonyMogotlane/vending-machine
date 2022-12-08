@@ -5,37 +5,42 @@ public class VendingMachineManager
 {
     public int TotalIncome { get; set; }
     public Dictionary<string, int> AllSoldProducts { get; set; }
+    public List<Azkoyen> VendingMachines {get;set;}
 
-    public Azkoyen Vm1 { get; set; }
-    public Azkoyen Vm2 { get; set; }
-    public Azkoyen Vm3 { get; set; }
-
-    public VendingMachineManager(Azkoyen vm1, Azkoyen vm2, Azkoyen vm3)
+    public VendingMachineManager()
     {
-        this.Vm1 = vm1;
-        this.Vm2 = vm2;
-        this.Vm3 = vm3;
         AllSoldProducts = new Dictionary<string, int>();
+        VendingMachines = new List<Azkoyen>();
     }
 
-    public double GetTotalIncome()
+ 
+    public void AddVendingMachines(params Azkoyen[] vms)
     {
-       return Vm1.TotalAmount + Vm2.TotalAmount + Vm3.TotalAmount;
+        foreach (var vm in vms)
+            VendingMachines.Add(vm);
     }
 
-    public void AddSoldProducts(Dictionary<string, int> soldProducts)
+    public int CountVendingMachines() => VendingMachines.Count();
+    
+    // Total income of all vending machine
+    public double GetTotalIncome() => 
+        VendingMachines.Select(vm => vm.TotalAmount).Aggregate(0.00, (sum, ta) => sum + ta);
+
+
+    public void AddSoldProducts()
     {
-        foreach (var product in soldProducts)
+        foreach (var vm in VendingMachines)
         {
-            if(!AllSoldProducts.ContainsKey(product.Key))
-                AllSoldProducts.Add(product.Key, 1);
-            else
-                AllSoldProducts[product.Key]++;
+            foreach (var product in vm.SoldProducts)
+            {
+                if(!AllSoldProducts.ContainsKey(product.Key))
+                    AllSoldProducts.Add(product.Key, 1);
+                else
+                    AllSoldProducts[product.Key]++;
+            }
         }
     }
 
-    public string GetMostPopular()
-    {
-        return AllSoldProducts.Keys.Max();
-    }
+    public string GetMostPopular() => AllSoldProducts.Keys.Max();
+    public string GetLeastPopular() => AllSoldProducts.Keys.Min();
 }
