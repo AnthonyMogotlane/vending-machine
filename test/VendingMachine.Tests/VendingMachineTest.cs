@@ -5,7 +5,6 @@ using VendingMachineLib.Model;
 namespace VendingMachineLib.Tests;
 public class VendingMachineTest
 {
-
     public List<Product> GetProducts()
     {
         return new List<Product>()
@@ -16,11 +15,16 @@ public class VendingMachineTest
         };
     }
 
+    PowerSource powerSource = new PowerSource("Electricity"); // Power source for the whole building
+
     [Fact]
     public void ShouldReturnThePriceOfAColaCola()
     {
         // Given
-        var vm1 = new Azkoyen(GetProducts());
+        bool inputPower = powerSource.GetPower(); // Getting power
+
+
+        var vm1 = new Azkoyen(GetProducts(), inputPower);
         // When
         string product = "CocaCola";
         // Then
@@ -30,8 +34,10 @@ public class VendingMachineTest
     [Fact]
     public void ShouldReturnThePriceOfAKitKat()
     {
-        // Given
-        var vm = new Azkoyen(GetProducts());
+        // Given        
+        bool inputPower = powerSource.GetPower(); // Getting power
+        
+        var vm = new Azkoyen(GetProducts(), inputPower);
         // When
         string product = "KitKat";
         // Then
@@ -42,7 +48,9 @@ public class VendingMachineTest
     public void ShouldReturnProductIfFundIsEnough()
     {
         // Given
-        var vm = new Azkoyen(GetProducts());
+        bool inputPower = powerSource.GetPower(); // Getting power
+
+        var vm = new Azkoyen(GetProducts(), inputPower);
         // When
         string product = "CocaCola";
         double price = 20.00;
@@ -56,7 +64,9 @@ public class VendingMachineTest
     public void ShouldReturnInsufficientFundsIfNotEnough()
     {
         // Given
-        var vm = new Azkoyen(GetProducts());
+        bool inputPower = powerSource.GetPower(); // Getting power
+
+        var vm = new Azkoyen(GetProducts(), inputPower);
         // When
         string product = "Simba";
         double price = 10.00;
@@ -69,11 +79,13 @@ public class VendingMachineTest
     public void ShouldReturnTotalOfTheProductsBought()
     {
         // Given
+        bool inputPower = powerSource.GetPower(); // Getting power
+
         var vmm = new VendingMachineManager(); // Manager Instance
 
-        var vm1 = new Azkoyen(GetProducts());
-        var vm2 = new Azkoyen(GetProducts());
-        var vm3 = new Azkoyen(GetProducts());
+        var vm1 = new Azkoyen(GetProducts(), inputPower);
+        var vm2 = new Azkoyen(GetProducts(), inputPower);
+        var vm3 = new Azkoyen(GetProducts(), inputPower);
 
         // When
         vm1.BuyProduct("Simba", 19.99);
@@ -90,9 +102,11 @@ public class VendingMachineTest
     public void ShouldReturnTheMostPopularProductSold()
     {
         // Given
-        var vm1 = new Azkoyen(GetProducts());
-        var vm2 = new Azkoyen(GetProducts());
-        var vm3 = new Azkoyen(GetProducts());
+        bool inputPower = powerSource.GetPower(); // Getting power
+
+        var vm1 = new Azkoyen(GetProducts(), inputPower);
+        var vm2 = new Azkoyen(GetProducts(), inputPower);
+        var vm3 = new Azkoyen(GetProducts(), inputPower);
 
         var vmm = new VendingMachineManager();
         // When
@@ -110,11 +124,13 @@ public class VendingMachineTest
     [Fact]
     public void ShouldReturnTheLeastPopularProductSold()
     {
+        bool inputPower = powerSource.GetPower(); // Getting power
+
         var vmm = new VendingMachineManager(); // Manager instance
         // Given
-        var vm1 = new Azkoyen(GetProducts());
-        var vm2 = new Azkoyen(GetProducts());
-        var vm3 = new Azkoyen(GetProducts());
+        var vm1 = new Azkoyen(GetProducts(), inputPower);
+        var vm2 = new Azkoyen(GetProducts(), inputPower);
+        var vm3 = new Azkoyen(GetProducts(), inputPower);
         // When -> Items bought in vending machines in the building
         vm1.BuyProduct("Simba", 19.99);
         vm2.BuyProduct("Simba", 19.99);
@@ -122,7 +138,7 @@ public class VendingMachineTest
         vm3.BuyProduct("CocaCola", 12.99);
 
         vmm.AddVendingMachines(vm1, vm2, vm3);
-        vmm.AddSoldProducts(); 
+        vmm.AddSoldProducts();
         // Then
         Assert.Equal("CocaCola", vmm.GetLeastPopular());
     }
@@ -130,17 +146,34 @@ public class VendingMachineTest
     [Fact]
     public void ShouldReturnNumberOfVendingMachinesInTheBuilding()
     {
+        bool inputPower = powerSource.GetPower(); // Getting power
+
         var vmm = new VendingMachineManager(); // Manager instance
         // Given
-        var vm1 = new Azkoyen(GetProducts());
-        var vm2 = new Azkoyen(GetProducts());
-        var vm4 = new Azkoyen(GetProducts());
-        var vm5 = new Azkoyen(GetProducts());
-        var vm6 = new Azkoyen(GetProducts());
-        var vm7 = new Azkoyen(GetProducts());
+        var vm1 = new Azkoyen(GetProducts(), inputPower);
+        var vm2 = new Azkoyen(GetProducts(), inputPower);
+        var vm4 = new Azkoyen(GetProducts(), inputPower);
+        var vm5 = new Azkoyen(GetProducts(), inputPower);
+        var vm6 = new Azkoyen(GetProducts(), inputPower);
+        var vm7 = new Azkoyen(GetProducts(), inputPower);
         // When
         vmm.AddVendingMachines(vm1, vm2, vm4, vm5, vm6, vm7); // 6 machines in the building
         // Then
         Assert.Equal(6, vmm.CountVendingMachines());
+    }
+
+
+    [Fact]
+    public void ShouldReturnFalseIfPowerSourceIsInvalid()
+    {
+        var ps = new PowerSource("");
+        Assert.Equal(false, ps.GetPower());
+    }
+
+    [Fact]
+    public void ShouldReturnTrueIfPowerSourceIsValid()
+    {
+        var ps = new PowerSource("Solar");
+        Assert.Equal(true, ps.GetPower());
     }
 }
