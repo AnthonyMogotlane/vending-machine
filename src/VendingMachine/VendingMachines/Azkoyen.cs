@@ -7,9 +7,9 @@ public class Azkoyen : IVendingMachine
     public double Change { get; set; }
     public List<Product> Products { get; set; }
     public Dictionary<string, int> SoldProducts { get; set; }
-    public bool Power { get; set; }
+    public PowerSource Power { get; set; }
 
-    public Azkoyen(List<Product> products, bool power)
+    public Azkoyen(List<Product> products, PowerSource power)
     {
         this.Products = products;
         this.SoldProducts = new Dictionary<string, int>();
@@ -18,7 +18,7 @@ public class Azkoyen : IVendingMachine
 
     public double CheckPrice(string name)
     {
-        if(Power)
+        if(Power.PowerStatus())
         {
             var product = Products.Find(o => o.Name == name);
             return product.Price;
@@ -28,7 +28,7 @@ public class Azkoyen : IVendingMachine
 
     public string BuyProduct(string name, double price)
     {
-        if (Power)
+        if (Power.PowerStatus())
         {
             var product = Products.Find(o => o.Name == name);
 
@@ -52,6 +52,6 @@ public class Azkoyen : IVendingMachine
         return "";
     }
 
-    public double GetTotalPrice() => Power ? TotalAmount : 0.00;
-    public double GetChange() => Power ? Change : 0.00;
+    public double GetTotalPrice() => Power.PowerStatus() ? TotalAmount : 0.00;
+    public double GetChange() => Power.PowerStatus() ? Change : 0.00;
 }
