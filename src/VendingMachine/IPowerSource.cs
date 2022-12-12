@@ -1,6 +1,6 @@
 
 namespace VendingMachineLib;
-public class PowerSource
+public interface IPowerSource
 {
-    public bool PowerStatus() => On;
+    public bool PowerStatus();
 }

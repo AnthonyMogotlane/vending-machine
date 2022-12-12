@@ -1,6 +1,8 @@
 using VendingMachineLib.Model;
+using VendingMachineLib.PowerSources;
 
-namespace VendingMachineLib;
+
+namespace VendingMachineLib.VendingMachines;
 public class Azkoyen : IVendingMachine
 {
     public double TotalAmount { get; set; }
@@ -16,42 +18,44 @@ public class Azkoyen : IVendingMachine
         this.Power = power;
     }
 
-    public double CheckPrice(string name)
+    public string CheckPrice(string name)
     {
-        if(Power.PowerStatus())
-        {
-            var product = Products.Find(o => o.Name == name);
-            return product.Price;
-        }
-        return 0.00;
+        if (SwitchIsOff()) return PowerSupplyStatus(); // Check if the power is ON or OFF
+
+        var product = Products.Find(o => o.Name == name);
+        return $"R{product.Price}";
     }
 
     public string BuyProduct(string name, double price)
     {
-        if (Power.PowerStatus())
+        if (SwitchIsOff()) return PowerSupplyStatus(); // Check if the power is ON or OFF
+
+        // Execute if the is power
+        var product = Products.Find(o => o.Name == name);
+
+        if (product == null) return "Product not available";
+        if (product != null && price >= product.Price)
         {
-            var product = Products.Find(o => o.Name == name);
+            TotalAmount += product.Price;
+            Change = price - product.Price;
 
-            if (product == null) return "Product not available";
-            if (product != null && price >= product.Price)
-            {
-                TotalAmount += product.Price;
-                Change = price - product.Price;
-
-                if (!SoldProducts.ContainsKey(product.Name))
-                    SoldProducts.Add(product.Name, 1);
-                else
-                    SoldProducts[product.Name]++;
+            if (!SoldProducts.ContainsKey(product.Name))
+                SoldProducts.Add(product.Name, 1);
+            else
+                SoldProducts[product.Name]++;
 
 
-                Products.Remove(product);
-                return product.Name;
-            }
-            return "Insufficient funds";
+            Products.Remove(product);
+            return product.Name;
         }
-        return "";
+        return "Insufficient funds";
     }
 
-    public double GetTotalPrice() => Power.PowerStatus() ? TotalAmount : 0.00;
-    public double GetChange() => Power.PowerStatus() ? Change : 0.00;
+    public string GetTotalPrice() => SwitchIsOff() ? PowerSupplyStatus() : $"{TotalAmount}";
+    public string GetChange() => SwitchIsOff() ? PowerSupplyStatus() : $"{Change}";
+
+    // Get power source if the is power e.g "Electricity", "No Power" if the supply is off
+    public string PowerSupplyStatus() => Power.GetDesc();
+    // Returning false if the power source is off
+    public bool SwitchIsOff() => !Power.PowerStatus();
 }

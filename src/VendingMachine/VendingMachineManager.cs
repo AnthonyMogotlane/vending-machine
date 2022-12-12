@@ -1,6 +1,7 @@
+using VendingMachineLib.VendingMachines;
+
 
 namespace VendingMachineLib;
-
 public class VendingMachineManager
 {
     public int TotalIncome { get; set; }
