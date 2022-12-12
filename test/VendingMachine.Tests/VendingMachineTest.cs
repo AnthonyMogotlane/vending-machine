@@ -1,5 +1,7 @@
 using VendingMachineLib;
+using VendingMachineLib.VendingMachines;
 using VendingMachineLib.Model;
+using VendingMachineLib.PowerSources;
 
 
 namespace VendingMachineLib.Tests;
@@ -15,57 +17,48 @@ public class VendingMachineTest
         };
     }
 
-    PowerSource powerSource = new PowerSource(true); // Power source for the whole building
+    Electricity powerSource = new Electricity(true); // Power source for the whole building
 
     [Fact]
     public void ShouldReturnThePriceOfAColaCola()
     {
         // Given
-        bool inputPower = powerSource.PowerStatus(); // Getting power
-
-
         var vm1 = new Azkoyen(GetProducts(), powerSource);
         // When
         string product = "CocaCola";
         // Then
-        Assert.Equal(12.99, vm1.CheckPrice(product));
+        Assert.Equal("R12,99", vm1.CheckPrice(product));
     }
 
     [Fact]
     public void ShouldReturnThePriceOfAKitKat()
     {
-        // Given        
-        bool inputPower = powerSource.PowerStatus(); // Getting power
-        
+        // Given                
         var vm = new Azkoyen(GetProducts(), powerSource);
         // When
         string product = "KitKat";
         // Then
-        Assert.Equal(11.99, vm.CheckPrice(product));
+        Assert.Equal("R11,99", vm.CheckPrice(product));
     }
 
     [Fact]
     public void ShouldReturnProductIfFundIsEnough()
     {
         // Given
-        bool inputPower = powerSource.PowerStatus(); // Getting power
-
         var vm = new Azkoyen(GetProducts(), powerSource);
         // When
         string product = "CocaCola";
         double price = 20.00;
         // Then
         Assert.Equal(product, vm.BuyProduct(product, price));
-        Assert.Equal(12.99, vm.GetTotalPrice());
-        Assert.Equal(7.01, vm.GetChange());
+        Assert.Equal($"{12.99}", vm.GetTotalPrice());
+        Assert.Equal($"{7.01}", vm.GetChange());
     }
 
     [Fact]
     public void ShouldReturnInsufficientFundsIfNotEnough()
     {
         // Given
-        bool inputPower = powerSource.PowerStatus(); // Getting power
-
         var vm = new Azkoyen(GetProducts(), powerSource);
         // When
         string product = "Simba";
@@ -79,8 +72,6 @@ public class VendingMachineTest
     public void ShouldReturnTotalOfTheProductsBought()
     {
         // Given
-        bool inputPower = powerSource.PowerStatus(); // Getting power
-
         var vmm = new VendingMachineManager(); // Manager Instance
 
         var vm1 = new Azkoyen(GetProducts(), powerSource);
@@ -93,7 +84,6 @@ public class VendingMachineTest
         vm3.BuyProduct("CocaCola", 12.99);
 
         vmm.AddVendingMachines(vm1, vm2, vm3);
-
         // Then
         Assert.Equal(52.97, vmm.GetTotalIncome());
     }
@@ -102,8 +92,6 @@ public class VendingMachineTest
     public void ShouldReturnTheMostPopularProductSold()
     {
         // Given
-        bool inputPower = powerSource.PowerStatus(); // Getting power
-
         var vm1 = new Azkoyen(GetProducts(), powerSource);
         var vm2 = new Azkoyen(GetProducts(), powerSource);
         var vm3 = new Azkoyen(GetProducts(), powerSource);
@@ -124,8 +112,6 @@ public class VendingMachineTest
     [Fact]
     public void ShouldReturnTheLeastPopularProductSold()
     {
-        bool inputPower = powerSource.PowerStatus(); // Getting power
-
         var vmm = new VendingMachineManager(); // Manager instance
         // Given
         var vm1 = new Azkoyen(GetProducts(), powerSource);
@@ -146,8 +132,6 @@ public class VendingMachineTest
     [Fact]
     public void ShouldReturnNumberOfVendingMachinesInTheBuilding()
     {
-        bool inputPower = powerSource.PowerStatus(); // Getting power
-
         var vmm = new VendingMachineManager(); // Manager instance
         // Given
         var vm1 = new Azkoyen(GetProducts(), powerSource);
@@ -162,18 +146,35 @@ public class VendingMachineTest
         Assert.Equal(6, vmm.CountVendingMachines());
     }
 
-
     [Fact]
     public void ShouldReturnFalseIfPowerSourceIsInvalid()
     {
-        var ps = new PowerSource(false);
-        Assert.Equal(false, ps.PowerStatus());
+        var ps = new Electricity(false);
+        Assert.False(ps.PowerStatus());
     }
 
     [Fact]
     public void ShouldReturnTrueIfPowerSourceIsValid()
     {
-        var ps = new PowerSource(true);
-        Assert.Equal(true, ps.PowerStatus());
+        var ps = new Solar(true);
+        Assert.True(ps.PowerStatus());
+    }
+
+    [Fact]
+    public void ShouldReturnThePowerSourceSuppliedToTheVendingMachine()
+    {
+        Electricity electricity = new Electricity(false);
+        var vm1 = new Azkoyen(GetProducts(), electricity);
+
+        Assert.Equal("No Power", vm1.PowerSupplyStatus());
+    }
+
+    [Fact]
+    public void ShouldReturnNoPowerIfTheIsNoPowerSource()
+    {
+        Electricity electricity = new Electricity(true);
+        var vm1 = new Azkoyen(GetProducts(), electricity);
+
+        Assert.Equal("Powered by Electricity", vm1.PowerSupplyStatus());
     }
 }
