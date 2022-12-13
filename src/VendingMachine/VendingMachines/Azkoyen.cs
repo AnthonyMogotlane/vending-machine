@@ -23,7 +23,7 @@ public class Azkoyen : IVendingMachine
         if (SwitchIsOff()) return PowerSupplyStatus(); // Check if the power is ON or OF
 
         var product = Products.Find(o => o.Name == name);
-        return $"R{product.Price}";
+        return $"R{product.Price}".Replace(',', '.');
     }
 
     public string BuyProduct(string name, double price)
@@ -51,8 +51,8 @@ public class Azkoyen : IVendingMachine
         return "Insufficient funds";
     }
 
-    public string GetTotalPrice() => SwitchIsOff() ? PowerSupplyStatus() : $"R{TotalAmount}";
-    public string GetChange() => SwitchIsOff() ? PowerSupplyStatus() : $"R{Change}";
+    public string GetTotalPrice() => SwitchIsOff() ? PowerSupplyStatus() : $"R{TotalAmount}".Replace(',', '.');
+    public string GetChange() => SwitchIsOff() ? PowerSupplyStatus() : $"R{Change}".Replace(',', '.');
 
     // Get power source if the is power e.g "Electricity", "No Power" if the supply is off
     public string PowerSupplyStatus() => Power.GetDesc();
