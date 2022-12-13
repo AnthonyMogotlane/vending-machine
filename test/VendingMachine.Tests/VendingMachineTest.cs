@@ -44,7 +44,7 @@ public class VendingMachineTest
 
 
 
-        Assert.Equal("R11.99".Replace('.', ','), vm.CheckPrice(product));
+        Assert.Equal("R11.99", vm.CheckPrice(product));
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public class VendingMachineTest
         double price = 20.00;
         // Then
         Assert.Equal(product, vm.BuyProduct(product, price));
-        Assert.Equal("R12.99".Replace('.', ','), vm.GetTotalPrice());
-        Assert.Equal("R7.01".Replace('.', ','), vm.GetChange());
+        Assert.Equal("R12.99", vm.GetTotalPrice());
+        Assert.Equal("R7.01", vm.GetChange());
     }
 
     [Fact]
